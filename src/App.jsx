@@ -1,6 +1,6 @@
 import { useState } from "react";
 import sampleSchema from "../src/components/data/sampleSchema";
-import mockGenerator from "./utils/mockGenerator";
+import { generateUI } from "./services/aiService";
 
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
@@ -15,27 +15,27 @@ function App() {
   const [error, setError] = useState("");
 
   const handleGenerate = async (prompt) => {
-    setIsGenerating(true);
-    setError("");
+  setIsGenerating(true);
+  setError("");
 
-    try {
-      const generatedSchema = mockGenerator(prompt);
+  try {
+    const generatedSchema = await generateUI(prompt, uiSchema);
 
-      const validation = validateSchema(generatedSchema);
+    const validation = validateSchema(generatedSchema);
 
-      if (!validation.valid) {
-        setError(validation.error);
-        return;
-      }
-
-      setUiSchema(generatedSchema);
-    } catch (error) {
-      console.error(error);
-      setError("Something went wrong while generating the UI.");
-    } finally {
-      setIsGenerating(false);
+    if (!validation.valid) {
+      setError(validation.error);
+      return;
     }
-  };
+
+    setUiSchema(generatedSchema);
+  } catch (error) {
+    console.error(error);
+    setError("Something went wrong while generating the UI.");
+  } finally {
+    setIsGenerating(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#070b14] text-white">
